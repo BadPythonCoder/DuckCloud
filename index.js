@@ -24,6 +24,9 @@ function setTimeoutAsync(ms) {
 		}, ms);
 	});
 }
+
+const config = JSON.parse(fs.readFileSync( "./config.json" ));
+
 const cookie = require("cookie");
 const db = {
 	get: async function (item) {
@@ -898,7 +901,7 @@ app.get("/logoff", async function (req, res) {
 app.get("/ul_link", async function (req, res) {
 	if (req.cookies.token) return res.redirect("/main");
 	if (req.cookies.token_createfor) return res.redirect("/user_page");
-	if (!req.query.deviceID) res.redirect("https://ultimatelogon.pcprojects.tk/oauth?requestToken=a&followLink=" + encodeURIComponent("http://" + req.hostname + ":3000/ul_link") + "&companyName=DuckCloud");
+	if (!req.query.deviceID) res.redirect(`https://ultimatelogon.pcprojects.tk/oauth?requestToken=a&followLink=${encodeURIComponent(`http://${req.hostname}:${config.port}/ul_link`)}&companyName=DuckCloud`);
 	let devdet = {
 		ok: false
 	};
@@ -1761,6 +1764,6 @@ io.on("connection", async function (client) {
 	});
 })
 
-http.listen(3000, () => {
+http.listen(config.port, () => {
 	console.log('server started');
 });
