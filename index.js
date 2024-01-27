@@ -209,6 +209,8 @@ app.use(function (req, res, next) {
 //And... yep. goodluck! :)
 app.get('/', async (req, res) => {
 	if (req.cookies.token) return res.redirect("/main");
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/index.jsembeds");
 });
 
@@ -218,11 +220,15 @@ app.get('/regular.css', async (req, res) => {
 
 app.get("/register", async function (req, res) {
 	if (req.cookies.token) return res.redirect("/main");
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/register.jsembeds");
 });
 
 app.get("/trustedTech", async function (req, res) {
 	if (req.cookies.token) return res.redirect("/main");
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/userHelpToken.jsembeds");
 });
 
@@ -308,6 +314,8 @@ app.get("/main", async function (req, res) {
 			dockers = dockers + "<a class=\"object vmsetlink\" href=\"/settings/" + Object.keys(user.object.virtuals).indexOf(vm) + "\" style=\"position: relative; top: " + top + "px;\"><b>" + he.encode(vm) + " </b><span class=\"" + state + "-icon\"></span><label class=\"arrow manage-vm\">→</label></a>";
 		}
 	}
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/template.jsembeds", {
 		username: he.encode(user.username),
 		dockers: dockers
@@ -351,6 +359,8 @@ app.get("/settings/:vm", async function (req, res) {
 	});
 	let container = docker.getContainer(user.object.virtuals[Object.keys(user.object.virtuals)[Number(req.params.vm)]].id);
 	let state = await container.inspect();
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/template_2.jsembeds", {
 		username: he.encode(user.username),
 		vm_count: req.params.vm,
@@ -531,6 +541,8 @@ app.get("/chown/:vm", async function (req, res) {
 		target: "/",
 		msg: "This operation has been cancelled due to self-blocking in effect on your account (e5). Please contact the system administrator."
 	});
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/chown.jsembeds", {
 		username: he.encode(user.username),
 		vm_count: req.params.vm,
@@ -555,7 +567,9 @@ app.post("/chown/:vm", async function (req, res) {
 	let newOwner = await db.get(req.body.username);
 	if (!newOwner) return res.redirect("/chown/" + req.params.vm);
 	if ((!newOwner.isPRO && Object.keys(newOwner.virtuals).length) || newOwner.disableSharing) {
-		return res.render(__dirname + "/target_not_pro_yet.jsembeds", {
+		return 
+	if(!config.serve_client) return;
+		res.render(__dirname + "/target_not_pro_yet.jsembeds", {
 			username: he.encode(user.username),
 			target: he.encode(req.body.username),
 			vm_count: req.params.vm,
@@ -582,6 +596,8 @@ app.get("/ren/:vm", async function (req, res) {
 		target: "/",
 		msg: "This operation has been cancelled due to self-blocking in effect on your account (e5). Please contact the system administrator."
 	});
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/rename.jsembeds", {
 		username: he.encode(user.username),
 		vm_count: req.params.vm,
@@ -628,6 +644,8 @@ app.get("/whitectl/:vm", async function (req, res) {
 		target: "/",
 		msg: "This operation has been cancelled due to self-blocking in effect on your account (e5). Please contact the system administrator."
 	});
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/whitectl.jsembeds", {
 		username: he.encode(user.username),
 		vm_count: req.params.vm,
@@ -708,6 +726,8 @@ app.get("/ramset/:vm", async function (req, res) {
 		target: "/",
 		msg: "This operation has been cancelled due to self-blocking in effect on your account (e5). Please contact the system administrator."
 	});
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/ramset.jsembeds", {
 		username: he.encode(user.username),
 		vm_count: req.params.vm,
@@ -836,6 +856,8 @@ app.get("/newVM", async function (req, res) {
 		});
 	}
 
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/newVM.jsembeds", {
 		username: he.encode(user.username)
 	});
@@ -965,6 +987,8 @@ app.get("/user_page", async function (req, res) {
 		res.clearCookie("token_createfor");
 		return res.redirect("/ul_link");
 	}
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/select_user_type.jsembeds", {
 		username: he.encode(await a.text())
 	});
@@ -1076,6 +1100,8 @@ app.get("/manage", async function (req, res) {
 			<button onclick=\"return confirm('Are you sure?')\" title=\"remove this PRO token\">x</button>
 		</form>`;
 	}
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/manage.jsembeds", {
 		username: he.encode(user.username),
 		associatedCS: (user.object.linkedTo) ? "" : "<!--",
@@ -1129,7 +1155,9 @@ app.post("/destroyAccount", async function (req, res) {
 		res.clearCookie("token");
 		return res.redirect("/");
 	}
-	if (user.isTechToken) return res.render(__dirname + "/redirector.jsembeds", {
+	if (user.isTechToken) return 
+	if(!config.serve_client) return;
+		res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "A trusted technician cannot delete an account! Only the user can use this tool."
 	});
@@ -1160,7 +1188,9 @@ app.post("/changeToken", async function (req, res) {
 		res.clearCookie("token");
 		return res.redirect("/");
 	}
-	if (user.isTechToken) return res.render(__dirname + "/redirector.jsembeds", {
+	if (user.isTechToken) return 
+	if(!config.serve_client) return;
+		res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "Please ask the user to reset the token themselves. This tool won't do anything."
 	});
@@ -1182,6 +1212,8 @@ app.post("/ul_unlink", async function (req, res) {
 	if (SHA256(req.body.password) == user.object.password) {
 		delete user.object.linkedTo;
 		await db.set(user.username, user.object);
+		
+	if(!config.serve_client) return;
 		res.render(__dirname + "/redirector.jsembeds", {
 			target: "/manage",
 			msg: "Successful!"
@@ -1200,6 +1232,8 @@ app.post("/toggle_sharing", async function (req, res) {
 	}
 	user.object.disableSharing = !user.object.disableSharing;
 	await db.set(user.username, user.object);
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "Successful!"
@@ -1241,7 +1275,9 @@ app.post("/pro_apply", async function (req, res) {
 	await db.set("pro_coder", procoder);
 	user.object.isPRO = true;
 	await db.set(user.username, user.object);
-	return res.render(__dirname + "/redirector.jsembeds", {
+	return 
+	if(!config.serve_client) return;
+	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "PRO flag acquired successfully."
 	});
@@ -1272,6 +1308,8 @@ app.post("/removeprocode", async function (req, res) {
 	}
 	user.object.procodes = codes;
 	await db.set(user.username, user.object);
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "Code removed successfully!"
@@ -1300,6 +1338,8 @@ app.post("/createprocode", async function (req, res) {
 	};
 	user.object.procodes = codes;
 	await db.set(user.username, user.object);
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "Code created successfully! <code>" + code + "</code>",
@@ -1314,7 +1354,9 @@ app.post("/selfblocking", async function (req, res) {
 		res.clearCookie("token");
 		return res.redirect("/");
 	}
-	if (user.isTechToken) return res.render(__dirname + "/redirector.jsembeds", {
+	if (user.isTechToken) return 
+	if(!config.serve_client) return;
+		res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "This feature is limited to users. You are logged in as a trusted technician at this moment."
 	});
@@ -1338,6 +1380,8 @@ app.post("/selfblocking", async function (req, res) {
 	}
 	if (!userfriendly) userfriendly = "<b>No new self-blocks were introduced.</b>";
 	await db.set(user.username, user.object);
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "Self-blocking applied successfully!<br>Blocked features:<br>" + userfriendly + "<br>Restrictions were applied as soon as this message popped up.",
@@ -1352,17 +1396,23 @@ app.post("/recoveryKey", async function (req, res) {
 		res.clearCookie("token");
 		return res.redirect("/");
 	}
-	if (user.isTechToken) return res.render(__dirname + "/redirector.jsembeds", {
+	if (user.isTechToken) return 
+	if(!config.serve_client) return;
+		res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "This feature is limited to users. You are logged in as a trusted technician at this moment."
 	});
-	if (SHA256(req.body.password) != user.object.password) return res.render(__dirname + "/redirector.jsembeds", {
+	if (SHA256(req.body.password) != user.object.password) return 
+	if(!config.serve_client) return;
+		res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "Wrong password."
 	});
 	let recoveryKey = genToken(512);
 	user.object.recoveryKey = SHA256(recoveryKey);
 	await db.set(user.username, user.object);
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "Your new recovery key is: <label class=\"hideWithoutHover\" onclick=\"this.classList.contains('hideWithoutHover')?this.classList.remove('hideWithoutHover'):this.classList.add('hideWithoutHover')\"><code>" + he.encode(recoveryKey) + "</code></label><br>Please: store the key in a physical location or a password manager; do not give the key to anyone except the email you see in <a href=\"/contact\" target=\"_blank\" rel=\"noopener noreferrer\">contact us page</a> (this opens in a new tab); rotate the key after a successful account recovery (it IS required!); do not use the recovery key when you don't need it; do not use the recovery key as a password to another service.",
@@ -1377,13 +1427,17 @@ app.post("/trustedTechCreate", async function (req, res) {
 		res.clearCookie("token");
 		return res.redirect("/");
 	}
-	if (user.isTechToken) return res.render(__dirname + "/redirector.jsembeds", {
+	if (user.isTechToken) return 
+	if(!config.serve_client) return;
+		res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "A trusted technician cannot link a trusted technician. Only the user can use this!"
 	});
 	let trustTech = genToken(32);
 	user.object.technicians.push(trustTech);
 	await db.set(user.username, user.object);
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "Trusted Technician session created! Please give this password to the technician: <code>" + trustTech + "</code><br>Please do not give this out to someone you don't trust. If you don't trust the person who requested this - go back to Manage, Trusted Technician, and then click \"Reset technician session\". Confirm your action by clicking Ok. Your account is no longer accessible by others after doing these steps.",
@@ -1400,6 +1454,8 @@ app.get("/trustedTechReset", async function (req, res) {
 	}
 	user.object.technicians.length = 0;
 	await db.set(user.username, user.object);
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "Trusted Technician logged out successfully."
@@ -1414,11 +1470,15 @@ app.get("/trustedTechQuery", async function (req, res) {
 		return res.redirect("/");
 	}
 	let users = await db.list();
-	for (let user of users) if ((await db.get(user)).isCertifiedTechnician && user == req.query.username) return res.render(__dirname + "/redirector.jsembeds", {
+	for (let user of users) if ((await db.get(user)).isCertifiedTechnician && user == req.query.username) return 
+	if(!config.serve_client) return;
+		res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "<code>" + req.query.username + "</code> is a valid DuckCloud Certified Technician!",
 		disableRedirect: true
 	});
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/manage",
 		msg: "<b><code>" + req.query.username + "</code> is not a valid DuckCloud Certified Technician</b>"
@@ -1440,6 +1500,8 @@ app.get("/apidocs", async function (req, res) {
 		res.clearCookie("token");
 		return res.redirect("/");
 	}
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/apidocs.jsembeds", {
 		username: he.encode(user.username)
 	});
@@ -1447,10 +1509,14 @@ app.get("/apidocs", async function (req, res) {
 
 app.get("/cors", async function (req, res) {
 	if (new URL(req.headers["referer"] || `http://${req.hostname}`).hostname == req.hostname) {
+		
+	if(!config.serve_client) return;
 		res.render(__dirname + "/corsmanager.jsembeds", {
 			ipmods: (ips[req.headers["cf-connecting-ip"] || req.headers["x-forwarded-for"] || req.ip || "0.0.0.0"]||[])
 		});
 	} else {
+		
+	if(!config.serve_client) return;
 		res.render(__dirname + "/autoaddcors.jsembeds", {
 			refDom: he.encode(new URL(req.headers["referer"] || `http://${req.hostname}`).hostname),
 			refUrl: he.encode(encodeURI(req.headers["referer"] || `http://${req.hostname}`))
@@ -1546,13 +1612,17 @@ app.post("/cors", async function (req, res) {
 	}
 	if (evald_code.endsWith("+") || evald_code.endsWith("-")) evald_code = evald_code.split("", evald_code.length - 1).join("");
 	evald_code = eval(evald_code);
-	if (evald_code != req.body.botpuzzl_solvd) return res.render(__dirname + "/redirector.jsembeds", {
+	if (evald_code != req.body.botpuzzl_solvd) return 
+	if(!config.serve_client) return;
+		res.render(__dirname + "/redirector.jsembeds", {
 		target: "/cors",
 		msg: "Invalid bot verification code. (Please make your network less slow!!)"
 	});
 	ip = req.headers["cf-connecting-ip"] || req.headers["x-forwarded-for"] || req.ip || "0.0.0.0";
 	if (!ips[ip]) ips[ip] = [];
 	ips[ip].push(req.body.domain);
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/cors",
 		msg: "New network service can now use DuckCloud APIs!"
@@ -1561,6 +1631,8 @@ app.post("/cors", async function (req, res) {
 app.get("/corsReset", async function (req, res) {
 	let ip = req.headers["cf-connecting-ip"] || req.headers["x-forwarded-for"] || req.ip || "0.0.0.0";
 	ips[ip] = [];
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/redirector.jsembeds", {
 		target: "/cors",
 		msg: "Network services can no longer use DuckCloud APIs."
@@ -1568,6 +1640,8 @@ app.get("/corsReset", async function (req, res) {
 });
 
 app.get("/contact", function(req, res) {
+	
+	if(!config.serve_client) return;
 	res.render(__dirname + "/contactInfo.jsembeds", {
 		adminemail: admin_email
 	});
