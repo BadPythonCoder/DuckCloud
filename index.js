@@ -856,10 +856,10 @@ app.get("/newVM", async function (req, res) {
 		});
 	}
 
-	
 	if(!config.serve_client) return;
 	res.render(__dirname + "/newVM.jsembeds", {
-		username: he.encode(user.username)
+		username: he.encode(user.username),
+		distros: (()=>{let o=""; for(let d of config.distros){ o += `<option value=${d.value}>${d.name}</option>` } return o;})()
 	});
 });
 
@@ -882,8 +882,8 @@ app.post("/newVM", async function (req, res) {
 
 	if (!req.body.vm_name) return res.redirect("/newVM");
 	if (Object.keys(user.object.virtuals).includes(req.body.vm_name)) return res.redirect("/newVM");
-	let distribs = ["debian", "archlinux", "duckcloud/suspiral", "centos"];
-	let managedInit = ["duckcloud/suspiral"];
+	let distribs = (()=>{ let r=[]; for (let d of config.distros){r.push(d.value)}; return r; })();
+	let managedInit = (()=>{ let r=[]; for (let d of config.distros){if(d.managedInit){r.push(d.value)}}; return r})();
 	if (!distribs.includes(req.body.distro)) return res.status(400).end();
 
 	let d = await docker.createContainer({

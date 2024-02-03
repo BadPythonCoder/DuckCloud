@@ -19,11 +19,7 @@
 			<label>VM name</label>: <input name="vm_name" placeholder="CloudVM" required></input>
 			<br>
 			Select a distro or a preset: <select name="distro" required>
-				<option value="debian">Debian (12 aka bookworm)</option>
-				<option value="archlinux">Arch Linux (2023.07.09)</option>
-				<option value="duckcloud/suspiral" selected>Suspiral (12 aka bookworm)</option>
-				<option value="centos">CentOS (8.4.2105; eol)</option>
-				<option value="preset1" disabled>Presets feature coming soon...</option>
+				<nodejs-embed>distros</nodejs-embed>
 			</select>
 			<hr>
 			<b class="subheader">Network:</b> By default, your VMs have no network. If you have agree to a networking agreement (opens automatically after you click this checkbox), you can access the Internet. This can't be changed later.

@@ -1,4 +1,28 @@
 {
 	"port": 3000,
-	"serve_client": false
+	"serve_client": true,
+	"distros": [
+		{
+			"name": "Debian (12 aka bookworm)",
+			"value": "debian",
+			"managedInit": false
+		},
+		{
+			"name": "Arch Linux (2023.07.09)",
+			"value": "archlinux",
+			"managedInit": false
+		},
+		{
+
+			"name": "Suspiral (12 aka bookworm)",
+			"value": "duckcloud/suspiral",
+			"managedInit": true
+		},
+		{
+
+			"name": "CentOS (8.4.2105; eol)",
+			"value": "centos",
+			"managedInit": false
+		}
+	]
 }
